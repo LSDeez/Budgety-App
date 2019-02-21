@@ -47,6 +47,10 @@ var  budgetController = (function(){
 
             // Return the new element
             return newItem;
+        },
+
+        testing: function() {
+            console.log(data);
         }
     };
 
@@ -71,7 +75,7 @@ var UIController = (function(){
             return {
                 type: document.querySelector(DOMstrings.inputType).value, 
                 description: document.querySelector(DOMstrings.inputDesc).value, 
-                value: document.querySelector(DOMstrings.inputVal).value
+                value: parseFloat(document.querySelector(DOMstrings.inputVal).value)
             };
         }, 
         // Making DOMstrings object public to the other controllers
@@ -141,13 +145,21 @@ var  controller = (function(budgetCtrl, UICtrl){
     };
 
     // This function gets called in the setupEventListeners function, which is actually called in the init method that is called at the bottom of this code. 
+    var updateBudget = function() {
+        // 1. Calculate the budget
+
+        // 2.return the budget
+
+        // 3. Display the budget on the UI 
+    }
+    
     var ctrlAddItem = function() {
         var input, newItem;
 
         // 1. Get the fied input data
         input = UICtrl.getinput();
-        console.log(input);
 
+        if (input.description !== "" && !isNaN(input.value) && input.value > 0){
         // 2. Add the item to the budget controller
         newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
@@ -157,9 +169,9 @@ var  controller = (function(budgetCtrl, UICtrl){
         // 4. clear the fields
         UICtrl.clearFields();
 
-        // 5. Calculate the budget
-
-        // 6. Display the budget on the UI
+        // 5. Calculate and update budget
+        updateBudget();
+        }
     };
     // This makes the init function public so we can call it. 
     return {
