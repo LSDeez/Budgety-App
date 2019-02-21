@@ -12,6 +12,14 @@ var  budgetController = (function(){
         this.description = description;
         this.value = value;
     };
+    // Created a private function that sums the totals of each data type's arrray (inc and exp)
+    var  calculateTotal = function(type) {
+        var sum = 0;
+        data.allItems[type].forEach(function(cur) {
+            sum += cur.value;
+        });
+        data.totals[type] = sum;
+    }
 
     //This is the data structure for the budgety app
     var data = {
@@ -22,7 +30,11 @@ var  budgetController = (function(){
         totals: {
             exp:0,
             inc:0
-        }
+        },
+        // Created two new properties in the data structure (budget and percentage) these will be used in the budget calculations
+        budget: 0,
+        // Use -1 in the percentage to represent that it is non existent
+        percentage: -1
     };
 
     return {
@@ -47,6 +59,33 @@ var  budgetController = (function(){
 
             // Return the new element
             return newItem;
+        },
+        // Created a public method that creates the budget calculations for the budgety app
+        calculateBudget: function() {
+
+            // calculate total income and expenses
+            calculateTotal('exp');
+            calculateTotal('inc');
+
+            // Calculate the budget: income - expenses
+            data.budget = data.totals.inc - data.totals.exp;
+
+            // calculate the percentage of income that we spent
+            if (data.totals.inc > 0){
+                data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+            } else {
+                data.percentage = -1;
+            }
+        },
+        
+        // Returns these values as an object so we can use these values later on
+        getBudget: function() {
+            return {
+                budget: data.budget,
+                totalInc: data.totals.inc,
+                totalExp: data.totals.exp,
+                percentage: data.percentage
+            }
         },
 
         testing: function() {
@@ -146,11 +185,17 @@ var  controller = (function(budgetCtrl, UICtrl){
 
     // This function gets called in the setupEventListeners function, which is actually called in the init method that is called at the bottom of this code. 
     var updateBudget = function() {
-        // 1. Calculate the budget
+        // 1. Calculate the Budget
+        // Calculates the budget so it can be returned into a variable later on
+        budgetCtrl.calculateBudget();
 
         // 2.return the budget
+        // This retrieves the calculations made in the Budget Controller and stores them into a variable we can use to update the Budget
+        var budget = budgetCtrl.getBudget();
 
-        // 3. Display the budget on the UI 
+        // 3. Display the budget on the UI
+        // Currently this is just a test to see the budget calculations in the console.
+        console.log(budget);
     }
     
     var ctrlAddItem = function() {
