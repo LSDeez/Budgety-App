@@ -203,7 +203,6 @@ var  controller = (function(budgetCtrl, UICtrl){
         });
     };
 
-    // This function gets called in the setupEventListeners function, which is actually called in the init method that is called at the bottom of this code. 
     var updateBudget = function() {
         // 1. Calculate the Budget
         // Calculates the budget so it can be returned into a variable later on
@@ -242,6 +241,8 @@ var  controller = (function(budgetCtrl, UICtrl){
     return {
         init: function() {
             console.log('Application has started.');
+            
+            // Initializing the UI so when we start the application everything is set to zero. 
             UICtrl.displayBudget({
                 budget: 0,
                 totalInc: 0,
