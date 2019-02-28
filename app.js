@@ -60,6 +60,26 @@ var  budgetController = (function(){
             // Return the new element
             return newItem;
         },
+
+        // Created a delete item method that will delete the item from the data structure. The parameters in deleteItem are going to be "type" and "ID". The reason "ID" is capitalized is to not confuse it when we call the id property of the "current" parameter in the array.map method. 
+        deleteItem: function(type, ID) {
+            var ids, index;
+
+            // Stores the new current array in a variable called ids
+            ids = data.allItems[type].map(function(current){
+                return current.id;
+            });
+
+            // Finds the index of the ID within the new array we just created and stores that value in the "index" variable
+            index = ids.indexOf(ID);
+
+            // Set this up so we dont run this method if there is no id in the DOM structure. Also we are removing the data from the data structure by using the Array.splice method. 
+            if (index !== -1) {
+                data.allItems[type].splice(index, 1);
+            }
+
+        },
+
         // Created a public method that creates the budget calculations for the budgety app
         calculateBudget: function() {
 
@@ -110,7 +130,8 @@ var UIController = (function(){
         budgetLabel: '.budget__value',
         incomeLabel: '.budget__income--value',
         expensesLabel: '.budget__expenses--value',
-        percentageLabel: '.budget__expenses--percentage'
+        percentageLabel: '.budget__expenses--percentage',
+        container: '.container'
     }
 
     return {
@@ -128,10 +149,12 @@ var UIController = (function(){
 
             if (type === 'inc'){
                 element = DOMstrings.incomeContainer;
-                html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+                // Changed the id "income-" to "inc-" to make it easier to grab the data.
+                html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             } else if (type === 'exp'){
                 element = DOMstrings.expensesContainer;
-                html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+                // Changed the id "expense-" to "exp-" to make it easier to grab the data.
+                html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }
 
             // Replace the placeholder text with some actual data
@@ -201,6 +224,10 @@ var  controller = (function(budgetCtrl, UICtrl){
                 ctrlAddItem();
             }
         });
+        
+        // Added and event listener to the container where all the income and expenses will be contained in. This is to set up event delegation
+        document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+
     };
 
     var updateBudget = function() {
@@ -237,6 +264,31 @@ var  controller = (function(budgetCtrl, UICtrl){
         updateBudget();
         }
     };
+
+    // I am passing the event as the parameter because we are going to being using this inside an event handler
+    var  ctrlDeleteItem = function(event){
+        // Set up the stage to delete the items from the budget UI
+        var itemID, splitID, type, ID;
+
+        // DOM traverses to the parent node that has the inc or exp id
+        itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+
+        if (itemID) {
+
+            //
+            splitID = itemID.split('-');
+            type = splitID[0];
+            ID = parseInt(splitID[1]);
+
+            // 1. delete the item from the data structure
+            budgetCtrl.deleteItem(type, ID);
+
+            // 2. Delete the item from the UI
+
+            // 3. Update and show the new budget
+        }
+
+    }
     // This makes the init function public so we can call it. 
     return {
         init: function() {
